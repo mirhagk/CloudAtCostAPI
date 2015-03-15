@@ -71,6 +71,7 @@ namespace CloudAtCostAPIConsole
                             break;
                         case "id": goto case "server";
                         case "server": goto case "server-id";
+                        case "serverid": goto case "server-id";
                         case "server-id":
                             ServerID = value;
                             break;
@@ -122,7 +123,7 @@ namespace CloudAtCostAPIConsole
                     break;
                 case "power-on":
                     var response = client.PowerOn(ServerID).Result;
-                    Console.WriteLine("Turned server {0} on", ServerID);
+                    Console.WriteLine("Turned server {0} on, result {1}, taskid {2}", ServerID, response.result, response.taskid);
                     break;
                 default:
                     Console.Error.WriteLine("Did not understand task {0}", Task);

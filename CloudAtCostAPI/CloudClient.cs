@@ -19,7 +19,12 @@ namespace CloudAtCostAPI
             public string action { get; set; }
             public List<T> data { get; set; }
         }
-        public class Response : Response<object> { }
+        public class PowerOperationResponse : Response<object>
+        {
+            public string serverid { get; set; }
+            public string result { get; set; }
+            public string taskid { get; set; }
+        }
         public class Server
         {
             public int id { get; set; }
@@ -88,17 +93,17 @@ namespace CloudAtCostAPI
         {
             return (await Execute<Response<Task>>(String.Format("https://panel.cloudatcost.com/api/v1/listtasks.php?key={0}&login={1}", Key, Login))).data;
         }
-        public async Task<Response> PowerOn(string serverID)
+        public async Task<PowerOperationResponse> PowerOn(string serverID)
         {
-            return await Execute<Response>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweron",Key,Login,serverID));
+            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweron",Key,Login,serverID));
         }
-        public async Task<Response> PowerOff(string serverID)
+        public async Task<PowerOperationResponse> PowerOff(string serverID)
         {
-            return await Execute<Response>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweroff", Key, Login, serverID));
+            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweroff", Key, Login, serverID));
         }
-        public async Task<Response> Reset(string serverID)
+        public async Task<PowerOperationResponse> Reset(string serverID)
         {
-            return await Execute<Response>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=powerreset", Key, Login, serverID));
+            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=powerreset", Key, Login, serverID));
         }
     }
 }
