@@ -17,6 +17,8 @@ namespace CloudAtCostAPIConsole
         static string CredentialFile { get; set; }
         static string Key { get; set; }
         static string Login { get; set; }
+        static string Task { get; set; }
+        static string ServerID { get; set; }
         static void Main(string[] args)
         {
             for (int i = 0; i < args.Length; i++)
@@ -25,6 +27,18 @@ namespace CloudAtCostAPIConsole
                 {
                     switch (args[i].Substring(2).ToLowerInvariant())
                     {
+                        case "tasks": goto case "list-tasks";
+                        case "list-tasks": Task = "list-tasks"; break;
+                        case "servers": goto case "list-servers";
+                        case "list-servers": Task = "list-servers"; break;
+                        case "templates": goto case "list-templates";
+                        case "list-templates": Task = "list-templates"; break;
+                        case "on": goto case "power-on";
+                        case "poweron": goto case "power-on";
+                        case "power-on": Task = "power-on"; break;
+                        default:
+                            Console.Error.WriteLine("Could not understand switch {0}", args[i].Substring(2));
+                            return;
                     }
                 }
                 else if (args[i].StartsWith("-"))
@@ -51,6 +65,15 @@ namespace CloudAtCostAPIConsole
                         case "login":
                             Login = value;
                             break;
+                        case "t": goto case "task";
+                        case "task":
+                            Task = value;
+                            break;
+                        case "id": goto case "server";
+                        case "server": goto case "server-id";
+                        case "server-id":
+                            ServerID = value;
+                            break;
                         default:
                             Console.Error.WriteLine("Could not understand parameter {0}", param);
                             return;
@@ -68,13 +91,43 @@ namespace CloudAtCostAPIConsole
                 {
                     switch (line[0])
                     {
-                        case "key":Key = line[1]; break;
-                        case "login":Login = line[1]; break;
-                        default: Console.Error.WriteLine("Don't understand key {0}", line[0]); break;
+                        case "key": Key = line[1]; break;
+                        case "login": Login = line[1]; break;
+                        default: Console.Error.WriteLine("Don't understand key {0}", line[0]); return;
                     }
                 }
             }
             var client = new CloudAtCostAPI.CloudClient();
+            client.Key = Key;
+            client.Login = Login;
+            switch (Task)
+            {
+                case "list-servers":
+                    var servers = client.ListServers().Result;
+                    foreach(var server in servers)
+                    {
+                        Console.WriteLine("label: {0} ip: {1} serverid: {2}, status: {3}", server.lable, server.ip, server.id, server.status);
+                    }
+                    break;
+                case "list-tasks":
+                    var tasks = client.ListTasks().Result;
+                    if (!tasks.Any())
+                    {
+                        Console.WriteLine("No currently running tasks");
+                    }
+                    foreach(var task in tasks)
+                    {
+                        Console.WriteLine("serverid: {0} action: {1} starttime: {2} status: {3} finishtime: {4}", task.serverid, task.action, task.starttime, task.status, task.finishtime);
+                    }
+                    break;
+                case "power-on":
+                    var response = client.PowerOn(ServerID).Result;
+                    Console.WriteLine("Turned server {0} on", ServerID);
+                    break;
+                default:
+                    Console.Error.WriteLine("Did not understand task {0}", Task);
+                    return;
+            }
         }
     }
 }
