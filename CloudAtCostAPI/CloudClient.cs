@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,13 +70,18 @@ namespace CloudAtCostAPI
             public string starttime { get; set; }
             public string finishtime { get; set; }
         }
-        private async Task<T> Execute<T>(string url, string data = null)
+        private async Task<T> Execute<T>(string url, object data = null)
         {
             System.Net.WebClient client = new System.Net.WebClient();
 
             string response;
             if (data != null)
-                response = await client.UploadStringTaskAsync(url, data);
+            {
+                var dataCollection = new NameValueCollection();
+                foreach(var field in data.GetType().GetProperties())
+                    dataCollection.Add(field.Name, field.GetValue(data).ToString());
+                response = new string(Encoding.UTF8.GetChars(await client.UploadValuesTaskAsync(url, dataCollection)));
+            }
             else
                 response = await client.DownloadStringTaskAsync(new Uri(url));
 
@@ -95,15 +101,15 @@ namespace CloudAtCostAPI
         }
         public async Task<PowerOperationResponse> PowerOn(string serverID)
         {
-            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweron",Key,Login,serverID));
+            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", new { key=Key, login=Login, sid = serverID, action="poweron" });
         }
         public async Task<PowerOperationResponse> PowerOff(string serverID)
         {
-            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweroff", Key, Login, serverID));
+            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", new { key = Key, login = Login, sid = serverID, action = "poweroff" });
         }
         public async Task<PowerOperationResponse> Reset(string serverID)
         {
-            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=powerreset", Key, Login, serverID));
+            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", new { key = Key, login = Login, sid = serverID, action = "reset" });
         }
     }
 }
