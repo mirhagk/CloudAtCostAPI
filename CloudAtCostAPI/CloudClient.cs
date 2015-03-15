@@ -19,6 +19,7 @@ namespace CloudAtCostAPI
             public string action { get; set; }
             public List<T> data { get; set; }
         }
+        public class Response : Response<object> { }
         public class Server
         {
             public int id { get; set; }
@@ -63,22 +64,41 @@ namespace CloudAtCostAPI
             public string starttime { get; set; }
             public string finishtime { get; set; }
         }
-        private async Task<T> Execute<T>(string url, string method)
+        private async Task<T> Execute<T>(string url, string data = null)
         {
             System.Net.WebClient client = new System.Net.WebClient();
-            return JsonConvert.DeserializeObject<T>(await client.DownloadStringTaskAsync(new Uri(url)));
+
+            string response;
+            if (data != null)
+                response = await client.UploadStringTaskAsync(url, data);
+            else
+                response = await client.DownloadStringTaskAsync(new Uri(url));
+
+            return JsonConvert.DeserializeObject<T>(response);
         }
         public async Task<IEnumerable<Server>> ListServers()
         {
-            return (await Execute<Response<Server>>(String.Format("https://panel.cloudatcost.com/api/v1/listservers.php?key={0}&login={1}", Key, Login), "get")).data;
+            return (await Execute<Response<Server>>(String.Format("https://panel.cloudatcost.com/api/v1/listservers.php?key={0}&login={1}", Key, Login))).data;
         }
         public async Task<IEnumerable<Template>> ListTemplates()
         {
-            return (await Execute<Response<Template>>(String.Format("https://panel.cloudatcost.com/api/v1/listtemplates.php?key={0}&login={1}", Key, Login), "get")).data;
+            return (await Execute<Response<Template>>(String.Format("https://panel.cloudatcost.com/api/v1/listtemplates.php?key={0}&login={1}", Key, Login))).data;
         }
         public async Task<IEnumerable<Task>> ListTasks()
         {
-            return (await Execute<Response<Task>>(String.Format("https://panel.cloudatcost.com/api/v1/listtasks.php?key={0}&login={1}", Key, Login), "get")).data;
+            return (await Execute<Response<Task>>(String.Format("https://panel.cloudatcost.com/api/v1/listtasks.php?key={0}&login={1}", Key, Login))).data;
+        }
+        public async Task<Response> PowerOn(string serverID)
+        {
+            return await Execute<Response>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweron",Key,Login,serverID));
+        }
+        public async Task<Response> PowerOff(string serverID)
+        {
+            return await Execute<Response>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=poweroff", Key, Login, serverID));
+        }
+        public async Task<Response> Reset(string serverID)
+        {
+            return await Execute<Response>("https://panel.cloudatcost.com/api/v1/powerop.php", string.Format("key={0}&login={1}&sid={2}&action=powerreset", Key, Login, serverID));
         }
     }
 }
