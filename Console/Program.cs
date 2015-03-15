@@ -36,6 +36,10 @@ namespace CloudAtCostAPIConsole
                         case "on": goto case "power-on";
                         case "poweron": goto case "power-on";
                         case "power-on": Task = "power-on"; break;
+                        case "off": goto case "power-off";
+                        case "poweroff": goto case "power-off";
+                        case "power-off": Task = "power-off"; break;
+                        case "reset": Task = "reset"; break;
                         default:
                             Console.Error.WriteLine("Could not understand switch {0}", args[i].Substring(2));
                             return;
@@ -69,7 +73,8 @@ namespace CloudAtCostAPIConsole
                         case "task":
                             Task = value;
                             break;
-                        case "id": goto case "server";
+                        case "id": goto case "sid";
+                        case "sid": goto case "server";
                         case "server": goto case "server-id";
                         case "serverid": goto case "server-id";
                         case "server-id":
@@ -122,9 +127,23 @@ namespace CloudAtCostAPIConsole
                     }
                     break;
                 case "power-on":
-                    var response = client.PowerOn(ServerID).Result;
-                    Console.WriteLine("Turned server {0} on, result {1}, taskid {2}", ServerID, response.result, response.taskid);
-                    break;
+                    {
+                        var response = client.PowerOn(ServerID).Result;
+                        Console.WriteLine("Turned server {0} on, result {1}, taskid {2}", ServerID, response.result, response.taskid);
+                        break;
+                    }
+                case "power-off":
+                    {
+                        var response = client.PowerOff(ServerID).Result;
+                        Console.WriteLine("Turned server {0} off, result {1}, taskid {2}", ServerID, response.result, response.taskid);
+                        break;
+                    }
+                case "reset":
+                    {
+                        var response = client.Reset(ServerID).Result;
+                        Console.WriteLine("Reset server {0}, result {1}, taskid {2}", ServerID, response.result, response.taskid);
+                        break;
+                    }
                 default:
                     Console.Error.WriteLine("Did not understand task {0}", Task);
                     return;
