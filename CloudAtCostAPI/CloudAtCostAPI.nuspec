@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CloudAtCostAPI</id>
+    <version>0.1.0</version>
+    <title>CloudAtCost API Wrapper</title>
+    <authors>mirhagk</authors>
+    <owners>mirhagk</owners>
+    <licenseUrl>https://raw.githubusercontent.com/mirhagk/CloudAtCostAPI/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/mirhagk/CloudAtCostAPI</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Provides a wrapper around the CloudAtCost API, allowing you to control your servers from your .NET application</description>
+    <releaseNotes>Initial release of the API</releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags>CloudAtCost API</tags>
+  </metadata>
+</package>
