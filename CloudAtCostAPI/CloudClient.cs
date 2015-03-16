@@ -26,6 +26,11 @@ namespace CloudAtCostAPI
             public string result { get; set; }
             public string taskid { get; set; }
         }
+        public class ConsoleResponse : Response<object>
+        {
+            public string serverid { get; set; }
+            public string console { get; set; }
+        }
         public class Server
         {
             public int id { get; set; }
@@ -110,6 +115,10 @@ namespace CloudAtCostAPI
         public async Task<PowerOperationResponse> Reset(string serverID)
         {
             return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/powerop.php", new { key = Key, login = Login, sid = serverID, action = "reset" });
+        }
+        public async Task<ConsoleResponse> GetServerConsole(string serverID)
+        {
+            return await Execute<ConsoleResponse>("https://panel.cloudatcost.com/api/v1/console.php", new { key = Key, login = Login, sid = serverID });
         }
     }
 }

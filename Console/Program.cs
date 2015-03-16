@@ -40,6 +40,8 @@ namespace CloudAtCostAPIConsole
                         case "poweroff": goto case "power-off";
                         case "power-off": Task = "power-off"; break;
                         case "reset": Task = "reset"; break;
+                        case "console": goto case "get-console";
+                        case "get-console": Task = "get-console"; break;
                         default:
                             Console.Error.WriteLine("Could not understand switch {0}", args[i].Substring(2));
                             return;
@@ -142,6 +144,12 @@ namespace CloudAtCostAPIConsole
                     {
                         var response = client.Reset(ServerID).Result;
                         Console.WriteLine("Reset server {0}, result {1}, taskid {2}", ServerID, response.result, response.taskid);
+                        break;
+                    }
+                case "get-console":
+                    {
+                        var response = client.GetServerConsole(ServerID).Result;
+                        Console.WriteLine("serverid: {0} console: {1}", ServerID, response.console);
                         break;
                     }
                 default:
