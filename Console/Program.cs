@@ -114,7 +114,7 @@ namespace CloudAtCostAPIConsole
                     var servers = client.ListServers().Result;
                     foreach(var server in servers)
                     {
-                        Console.WriteLine("label: {0} ip: {1} serverid: {2}, status: {3}", server.lable, server.ip, server.id, server.status);
+                        Console.WriteLine("label: {0} ip: {1} serverid: {2} status: {3} password: {4}", server.lable, server.ip, server.id, server.status, server.rootpass);
                     }
                     break;
                 case "list-tasks":

@@ -75,6 +75,23 @@ namespace CloudAtCostAPI
             public string starttime { get; set; }
             public string finishtime { get; set; }
         }
+        public class Resources
+        {
+            public class Used
+            {
+                public string cpu_used { get; set; }
+                public string ram_used { get; set; }
+                public string storage_used { get; set; }
+            }
+            public class Total
+            {
+                public string cpu_total { get; set; }
+                public string ram_total { get; set; }
+                public string storage_total { get; set; }
+            }
+            public Used used { get; set; }
+            public List<Total> total { get; set; }
+        }
         private async Task<T> Execute<T>(string url, object data = null)
         {
             System.Net.WebClient client = new System.Net.WebClient();
@@ -91,6 +108,18 @@ namespace CloudAtCostAPI
                 response = await client.DownloadStringTaskAsync(new Uri(url));
 
             return JsonConvert.DeserializeObject<T>(response);
+        }
+        public async Task<PowerOperationResponse> BuildServer(int cpu, int ram, int storage, int os)
+        {
+            return (await Execute<PowerOperationResponse>($"https://panel.cloudatcost.com/api/v1/cloudpro/build.php?key={Key}&login={Login}&cpu={cpu}&ram={ram}&storage={storage}&os={os}"));
+        }
+        public async Task<PowerOperationResponse> DeleteServer(int serverID)
+        {
+            return await Execute<PowerOperationResponse>("https://panel.cloudatcost.com/api/v1/cloudpro/delete.php", new { key = Key, login = Login, sid = serverID });
+        }
+        public async Task<Resources> GetResourceUsage()
+        {
+            return (await Execute<Response<Resources>>("https://panel.cloudatcost.com/api/v1/cloudpro/resources.php", new { key = Key, login = Login})).data[0];
         }
         public async Task<IEnumerable<Server>> ListServers()
         {
